@@ -22,9 +22,11 @@ def addToken(e):
         3: 'num',
         4: 'ident',
         5: 'op_comp',
-        6: 'reserv',
     }
-    listaDeTokens.append([token, estado.get(e)])
+    if e == 4 and reservadas.get(token, False):
+        listaDeTokens.append([token, estado.get(4), "reserv", ""])
+    else:
+        listaDeTokens.append([token, estado.get(e), "", ""])
     token = ""
 
 
@@ -117,10 +119,7 @@ def identificador(char, estadoAnterior):
     token = token + char
 
     if charValido(char) or char.isdigit():
-        if reservadas.get(token, False):
-            return reservada(file.read(1), estadoAtual)
         identificador(file.read(1), estadoAtual)
-
     else:
         erro()
 
@@ -135,20 +134,6 @@ def operadorComposto(char, estadoAnterior):
 
     if char == " " or char == "\t" or char == "\n" or char == "":
         return espacamento(file.read(1), estadoAtual)
-
-    else:
-        erro()
-
-
-def reservada(char, estadoAnterior):
-    estadoAtual = 6
-    if char == " " or char == "\t" or char == "\n" or char == "":
-        return espacamento(file.read(1), estadoAtual)
-
-    global token
-    token = token + char
-    if charValido(char) or char.isdigit():
-        identificador(file.read(1), estadoAtual)
 
     else:
         erro()
