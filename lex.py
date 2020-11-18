@@ -22,10 +22,12 @@ def addToken(e):
         3: 'num',
         4: 'ident',
         5: 'op_comp',
-        6: 'reserv',
     }
-    listaDeTokens.append([token, estado.get(e)])
-    token = ""
+    aux = [token, estado.get(e), "", ""]
+    if e == 4 and reservadas.get(token, False):
+        aux[2]="reserv"
+    listaDeTokens.append(aux)
+    token=""
 
 
 def charValido(ch):
@@ -40,7 +42,7 @@ def erro():
 
 
 def espacamento(char, estadoAnterior):
-    estadoAtual = 0
+    estadoAtual=0
     global token
     if estadoAnterior != 0 and estadoAnterior != -1:
         addToken(estadoAnterior)
@@ -50,7 +52,7 @@ def espacamento(char, estadoAnterior):
             return
         return espacamento(file.read(1), estadoAtual)
 
-    token = token + char
+    token=token + char
 
     if op.get(char, False):
         operador(file.read(1), estadoAtual)
@@ -70,12 +72,12 @@ def espacamento(char, estadoAnterior):
 
 def operador(char, estadoAnterior):
 
-    estadoAtual = 1
+    estadoAtual=1
     global token
     if char == " " or char == "\t" or char == "\n" or char == "":
         return espacamento(file.read(1), estadoAtual)
 
-    token = token + char
+    token=token + char
     if op.get(char, False):
         operadorComposto(file.read(1), estadoAtual)
 
@@ -85,7 +87,7 @@ def operador(char, estadoAnterior):
 
 def simbolo(char, estadoAnterior):
 
-    estadoAtual = 2
+    estadoAtual=2
     if char == " " or char == "\t" or char == "\n" or char == "":
         return espacamento(file.read(1), estadoAtual)
 
@@ -95,12 +97,12 @@ def simbolo(char, estadoAnterior):
 
 def numero(char, estadoAnterior):
 
-    estadoAtual = 3
+    estadoAtual=3
     global token
     if char == " " or char == "\t" or char == "\n" or char == "":
         return espacamento(file.read(1), estadoAtual)
 
-    token = token + char
+    token=token + char
     if char.isdigit():
         numero(file.read(1), estadoAtual)
 
@@ -109,25 +111,22 @@ def numero(char, estadoAnterior):
 
 
 def identificador(char, estadoAnterior):
-    estadoAtual = 4
+    estadoAtual=4
     global token
     if char == " " or char == "\t" or char == "\n" or char == "":
         return espacamento(file.read(1), estadoAtual)
 
-    token = token + char
+    token=token + char
 
     if charValido(char) or char.isdigit():
-        if reservadas.get(token, False):
-            return reservada(file.read(1), estadoAtual)
         identificador(file.read(1), estadoAtual)
-
     else:
         erro()
 
 
 def operadorComposto(char, estadoAnterior):
 
-    estadoAtual = 5
+    estadoAtual=5
 
     if not op_composto.get(token, False):
         print("operador invalido!")
@@ -140,21 +139,7 @@ def operadorComposto(char, estadoAnterior):
         erro()
 
 
-def reservada(char, estadoAnterior):
-    estadoAtual = 6
-    if char == " " or char == "\t" or char == "\n" or char == "":
-        return espacamento(file.read(1), estadoAtual)
-
-    global token
-    token = token + char
-    if charValido(char) or char.isdigit():
-        identificador(file.read(1), estadoAtual)
-
-    else:
-        erro()
-
-
-file = open("programa_pam.pam", "r")
+file=open("programa_pam.pam", "r")
 espacamento(file.readline(1), -1)
-output = open("tabela_de_tokens.pam", "w")
+output=open("tabela_de_tokens.pam", "w")
 output.write(str(listaDeTokens))
