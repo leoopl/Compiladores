@@ -1,9 +1,11 @@
-op = {">": "rel", "<": "rel",
-      "=": "rel",  "+": "ad", "-": "ad", "*": "mul", "/": "mul", "<=": "rel",  ">=": "rel", "<>": "rel"}
-
+op = {">": "op_rel", "<": "op_rel",
+      "=": "op_rel",  "+": "op_ad", "-": "op_ad", "*": "op_mul", "/": "op_mul", "<=": "op_rel",  ">=": "op_rel", "<>": "op_rel", ":=": "op_atrib"}
+''
 simbolos = {",": "simb", ";": "simb", ":": "simb", "(": "simb", ")": "simb"}
 
-reservadas = {"begin": "reserv", "int": "reserv", "end": "reserv"}
+reservadas = {"begin": "reserv", "int": "reserv",
+              "end": "reserv", "proc": "reserv", "func": "reserv",
+              "read": "reserv", "until": "reserv", "write": "reserv", "to": "reserv", "do": "reserv", "if": "reserv", "fi": "reserv", "else": "reserv"}
 
 
 token = ""
@@ -114,11 +116,6 @@ def numero(char, estadoAnterior):
         addToken(estadoAtual)
         token = token + char
         return operador(file.read(1), estadoAtual)
-    
-    if simbolos.get(char, False):
-      addToken(estadoAtual)
-      token = token + char
-      return simbolo(file.read(1), estadoAtual)
 
     token = token + char
     if char.isdigit():
