@@ -1,10 +1,13 @@
 import tabela_m as tabela
 op = {">": "rel", "<": "rel",
-      "=": "rel",  "+": "op_ad", "-": "op_ad", "*": "op_mul", "/": "op_mul", "<=": "op_rel",  ">=": "op_rel", "<>": "op_rel", ":=": "op_atrib"}
-
+      "=": "rel",  "+": "op_ad",\
+      "-": "op_ad", "*": "op_mul",\
+      "/": "op_mul", "<=": "op_rel",\
+      ">=": "op_rel", "<>": "op_rel",\
+      ":=": "op_atrib"}#op organizado
+from lex import erro#importado o metodo erro para uso na função analisador_sintatico()
 
 listaTokens = []
-
 pilhaNT = []
 
 
@@ -15,13 +18,12 @@ def push(data):
 
         if type(data[0]) == list:
             tipoToken = "t"
+        #não existe o método .empty pra checar se a lista é vazia, substituido por if list == []
+        elif (data[0] == "op_ad" | data[0] == "op_mul" | data[0] == "op_rel" | data[0] == "op_atrib" |\
+        data[0] == "id_var" | data[0] == "id_proc" | data[0] == "id_func" | data[0] == "num" | data[0] == "$"):
+            tipoToken = "t"
 
-        elif data[0] == "op_ad" or data[0] == "op_mul" or data[0] == "op_rel" or data[0] == "op_atrib" or
-        data[0] == "id_var" or data[0] == "id_proc" or data[0] == "id_func" or data[0] == "num" or data[0] == "$"
-        tipoToken = "t"
-
-        pilhaNT.push([data.pop(), tipoToken])
-
+        pilhaNT.append([data.pop(), tipoToken])
 
 def compare(pilha, token):
     if pilha == token:
@@ -32,24 +34,21 @@ def compare(pilha, token):
     if aux:
         if aux  == "$":
             return pilhaNT.pop()
-            
-                
-
-
-
-
+     
 def analisador_sintatico():
-    push(["$"])
-    pilhaNT.push(["programa"])
+    #não existe o método .push em lista, substituido por .append
+    pilhaNT.append(["$"])
+    pilhaNT.append(["programa"])
     fim = False
     while not fim:
-        head = pilhaNT.top()
+        head = pilhaNT[0]#não exite o método .top, substituido por [0]
 
-        if pilhaNT.empty and not listaTokens.empty() or not pilhaNT.empty() and listaTokens.empty():
+        if pilhaNT == [] and not listaTokens == [] or not pilhaNT== [] and listaTokens== []:
             erro()
             exit()
 
         if head[1] == "t":
             if type(head[0]) == list:
                 if head[0][1] == "op":
+                    break
 

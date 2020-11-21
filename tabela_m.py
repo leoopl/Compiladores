@@ -204,6 +204,7 @@ def get(lin, col):
         exit()
     
     aux = M[lin].get(col, False)
+    return aux
 
     
     
