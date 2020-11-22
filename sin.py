@@ -1,23 +1,12 @@
 import tabela_m as tabela_m
-
-#from lex import listaDeTokens
+from lex import listaDeTokens
 from stack import Stack
 
 print(tabela_m.get("mais_fatores", "op_mul"))
 pilha_nt = Stack()
 pilha_nt.push("$")
 pilha_nt.push("programa")
-listaDeTokens = [["int", "ident", "reserv", ""], ["x", "ident", "id_var", ""],
-                 [",", "simb", "", ""], ["y", "ident",
-                                         "id_var", ""], [";", "simb", "", ""],
-                 ["begin", "ident", "reserv", ""], [
-                     "read", "ident", "reserv", ""],
-                 ["x", "ident", "id_var", ""], [";", "simb", "", ""], [
-                     "read", "ident", "reserv", ""],
-                 ["y", "ident", "id_var", ""], [";", "simb", "", ""],
-                 ["x", "ident", "id_var", ""], [":=", "op", "op_atrib", ""],
-                 ["y", "ident", "id_var", ""], ["*", "op", "op_mul", ""],
-                 ["x", "ident", "id_var", ""], [";", "simb", "", ""], ["end", "ident", "reserv", ""]]
+
 listaDeTokens.append("$")
 
 
