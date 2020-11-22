@@ -35,7 +35,11 @@ def addToken(e):
 
 
 def charValido(ch):
-    if 97 <= ord(ch) <= 119:
+    if 97 <= ord(ch) <= 122:
+        return True
+    elif ch ==';' :#| ch == ',':
+        return True
+    elif ch ==',':
         return True
     return False
 
@@ -51,7 +55,7 @@ def espacamento(char, estadoAnterior):
     if estadoAnterior != 0 and estadoAnterior != -1:
         addToken(estadoAnterior)
 
-    if char == " " or char == "\t" or char == "\n" or char == "":
+    if char == " " or char == "\t" or char == "\n" or char =="" or char == ';' or char == ',':
         if char == '':
             return
         return espacamento(file.read(1), estadoAtual)
@@ -77,7 +81,7 @@ def espacamento(char, estadoAnterior):
 def operador(char, estadoAnterior):
     estadoAtual = 1
     global token
-    if char == " " or char == "\t" or char == "\n" or char == "":
+    if char == " " or char == "\t" or char == "\n" or char =="" or char == ';' or char == ',' :
         return espacamento(file.read(1), estadoAtual)
 
     if char.isdigit() or charValido(char):
@@ -99,7 +103,7 @@ def operador(char, estadoAnterior):
 def simbolo(char, estadoAnterior):
 
     estadoAtual = 2
-    if char == " " or char == "\t" or char == "\n" or char == "":
+    if char == " " or char == "\t" or char == "\n" or char =="" or char == ';' or char == ',':
         return espacamento(file.read(1), estadoAtual)
 
     else:
@@ -109,7 +113,7 @@ def simbolo(char, estadoAnterior):
 def numero(char, estadoAnterior):
     estadoAtual = 3
     global token
-    if char == " " or char == "\t" or char == "\n" or char == "":
+    if char == " " or char == "\t" or char == "\n" or char =="" or char == ';' or char == ',':
         return espacamento(file.read(1), estadoAtual)
 
     if op.get(char, False):
@@ -128,7 +132,7 @@ def numero(char, estadoAnterior):
 def identificador(char, estadoAnterior):
     estadoAtual = 4
     global token
-    if char == " " or char == "\t" or char == "\n" or char == "":
+    if char == " " or char == "\t" or char == "\n" or char =="" or char == ';' or char == ',':
         return espacamento(file.read(1), estadoAtual)
 
     if op.get(char, False):
