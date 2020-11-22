@@ -200,11 +200,7 @@ M = {
 
 def get(lin, col):
     if not M.get(lin):
-        print("erro! não terminal inexistente")
+        print("erro! não-terminal inexistente")
         exit()
-    
-    aux = M[lin].get(col, False)
-    return aux
 
-    
-    
+    return M[lin].get(col, False)

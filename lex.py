@@ -14,20 +14,29 @@ token = ""
 listaDeTokens = []
 
 
+def opAtrib():
+    pos = file.tell()
+    prox = file.read(1)
+    print(prox)
+    file.seek(pos)
+    return True if prox == "=" else False
+
+
 def addToken(e):
     global token
+    print("add " + token)
     estado = {
-        1: 'op',
-        2: 'simb',
-        3: 'num',
-        4: 'ident',
+        1: 'ident',
+        2: 'op',
+        3: 'simb',
+        4: 'num',
     }
     aux = [token, estado.get(e), "", ""]
 
-    if e == 4:
-        aux[2] = "reserv" if reservadas.get(token, False) else "id"
+    if e == 1:
+        aux[2] = "reserv" if reservadas.get(token, False) else "id_var"
 
-    elif e == 1:
+    elif e == 2:
         aux[2] = op.get(token)
 
     listaDeTokens.append(aux)
@@ -35,7 +44,7 @@ def addToken(e):
 
 
 def charValido(ch):
-    if 97 <= ord(ch) <= 119:
+    if 97 <= ord(ch) <= 122:
         return True
     return False
 
@@ -45,107 +54,182 @@ def erro():
     exit()
 
 
-def espacamento(char, estadoAnterior):
-    estadoAtual = 0
+def espaco(char, estadoAnterior):
     global token
+    print("espaço: char->" + char+(" ")+token)
+    estadoAtual = 0
     if estadoAnterior != 0 and estadoAnterior != -1:
         addToken(estadoAnterior)
 
     if char == " " or char == "\t" or char == "\n" or char == "":
-        if char == '':
+
+        if char == "":
             return
-        return espacamento(file.read(1), estadoAtual)
+        return espaco(file.read(1), estadoAtual)
 
-    token = token + char
+    token += char
 
-    if op.get(char, False):
-        operador(file.read(1), estadoAtual)
-
-    elif simbolos.get(char, False):
-        simbolo(file.read(1), estadoAtual)
+    if charValido(char):
+        identificador(file.read(1), estadoAtual)
 
     elif char.isdigit():
         numero(file.read(1), estadoAtual)
 
-    elif charValido(char):
-        identificador(file.read(1), estadoAtual)
+    elif op.get(char, False):
+        operador(file.read(1), estadoAnterior)
 
+    elif simbolos.get(char, False):
+        if char == ":":
+            if opAtrib():
+                operador(file.read(1), estadoAnterior)
+            else:
+                simbolo(file.read(1), estadoAnterior)
+        else:
+            simbolo(file.read(1), estadoAnterior)
     else:
         erro()
 
 
-def operador(char, estadoAnterior):
-    estadoAtual = 1
+def identificador(char, estadoAnterior):
     global token
+    print("ident: char->" + char+(" ")+token)
+    estadoAtual = 1
+
     if char == " " or char == "\t" or char == "\n" or char == "":
-        return espacamento(file.read(1), estadoAtual)
+        espaco(file.read(1), estadoAtual)
 
-    if char.isdigit() or charValido(char):
+    elif charValido(char) or char.isdigit():
+        token += char
+        identificador(file.read(1), estadoAtual)
+
+    elif op.get(char, False):
         addToken(estadoAtual)
-        token = token + char
-        if char.isdigit():
-            return numero(file.read(1), estadoAtual)
-        return identificador(file.read(1), estadoAtual)
+        token += char
+        operador(file.read(1), estadoAnterior)
 
-    token = token + char
+    elif simbolos.get(char, False):
+        addToken(estadoAtual)
+        token += char
+        if char == ":":
+            if opAtrib():
+                operador(file.read(1), estadoAtual)
+            else:
+                simbolo(file.read(1), estadoAtual)
+        else:
+            simbolo(file.read(1), estadoAtual)
 
-    if op.get(token, False):
-        operador(file.read(1), estadoAtual)
+    else:
+        erro
+
+
+def operador(char, estadoAnterior):
+    global token
+    print("op: char->" + char+(" ")+token)
+    estadoAtual = 2
+    if char == " " or char == "\t" or char == "\n" or char == "":
+        espaco(file.read(1), estadoAtual)
+
+    elif charValido(char):
+        addToken(estadoAtual)
+        token += char
+        identificador(file.read(1), estadoAtual)
+
+    elif char.isdigit():
+        addToken(estadoAtual)
+        token += char
+        numero(file.read(1), estadoAtual)
+
+    elif op.get(char, False):
+        if op.get(token+char, False):
+            token += char
+            espaco(file.read(1), estadoAtual)
+        else:
+            addToken(estadoAtual)
+            token += char
+            operador(file.read(1), estadoAtual)
+
+    elif simbolos.get(char, False):
+        addToken(estadoAtual)
+        token += char
+        if char == ":":
+            if opAtrib():
+                operador(file.read(1), estadoAtual)
+            else:
+                simbolo(file.read(1), estadoAtual)
+        else:
+            simbolo(file.read(1), estadoAtual)
 
     else:
         erro()
 
 
 def simbolo(char, estadoAnterior):
-
-    estadoAtual = 2
+    global token
+    print("simb: char->" + char+(" ")+token)
+    estadoAtual = 3
     if char == " " or char == "\t" or char == "\n" or char == "":
-        return espacamento(file.read(1), estadoAtual)
+        espaco(file.read(1), estadoAtual)
 
+    elif charValido(char):
+        addToken(estadoAtual)
+        token += char
+        identificador(file.read(1), estadoAtual)
+
+    elif char.isdigit():
+        addToken(estadoAtual)
+        token += char
+        numero(file.read(1), estadoAtual)
+
+    elif op.get(char, False):
+        addToken(estadoAtual)
+        token += char
+        operador(file.read(1), estadoAtual)
+
+    elif simbolos.get(char, False):
+        addToken(estadoAtual)
+        token += char
+        if char == ":":
+            if opAtrib():
+                operador(file.read(1), estadoAtual)
+            else:
+                simbolo(file.read(1), estadoAtual)
+        else:
+            simbolo(file.read(1), estadoAtual)
     else:
         erro()
 
 
 def numero(char, estadoAnterior):
-    estadoAtual = 3
     global token
+    print("num: char->" + char+(" ")+token)
+    estadoAtual = 4
     if char == " " or char == "\t" or char == "\n" or char == "":
-        return espacamento(file.read(1), estadoAtual)
+        espaco(file.read(1), estadoAtual)
 
-    if op.get(char, False):
-        addToken(estadoAtual)
-        token = token + char
-        return operador(file.read(1), estadoAtual)
-
-    token = token + char
-    if char.isdigit():
+    elif char.isdigit():
+        token += char
         numero(file.read(1), estadoAtual)
 
-    else:
-        erro()
-
-
-def identificador(char, estadoAnterior):
-    estadoAtual = 4
-    global token
-    if char == " " or char == "\t" or char == "\n" or char == "":
-        return espacamento(file.read(1), estadoAtual)
-
-    if op.get(char, False):
+    elif op.get(char, False):
         addToken(estadoAtual)
-        token = token + char
-        return operador(file.read(1), estadoAtual)
+        token += char
+        operador(file.read(1), estadoAtual)
 
-    token = token + char
-
-    if charValido(char) or char.isdigit():
-        identificador(file.read(1), estadoAtual)
-
+    elif simbolos.get(char, False):
+        addToken(estadoAtual)
+        token += char
+        if char == ":":
+            if opAtrib():
+                operador(file.read(1), estadoAtual)
+            else:
+                simbolo(file.read(1), estadoAtual)
+        else:
+            simbolo(file.read(1), estadoAtual)
     else:
         erro()
 
 
 file = open("programa_pam.pam", "r")
-espacamento(file.readline(1), -1)
-output = open("tabela_de_tokens.pam", "w")
-output.write(str(listaDeTokens))
+espaco(file.read(1), -1)
+res = open("tabela_de_tokens.pam", "w")
+res.write(str(listaDeTokens))
