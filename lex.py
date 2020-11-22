@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 op = {">": "op_rel", "<": "op_rel",
       "=": "op_rel",  "+": "op_ad", "-": "op_ad", "*": "op_mul", "/": "op_mul", "<=": "op_rel",  ">=": "op_rel", "<>": "op_rel", ":=": "op_atrib"}
 ''
@@ -5,7 +7,9 @@ simbolos = {",": "simb", ";": "simb", ":": "simb", "(": "simb", ")": "simb"}
 
 reservadas = {"begin": "reserv", "int": "reserv",
               "end": "reserv", "proc": "reserv", "func": "reserv",
-              "read": "reserv", "until": "reserv", "write": "reserv", "to": "reserv", "do": "reserv", "if": "reserv", "fi": "reserv", "else": "reserv"}
+              "read": "reserv", "until": "reserv", "write": "reserv",
+              "to": "reserv", "do": "reserv", "if": "reserv", "fi": "reserv",
+              "else": "reserv", "while": "reserv", "then": "reserv"}
 
 
 token = ""
@@ -49,8 +53,8 @@ def charValido(ch):
     return False
 
 
-def erro():
-    print("erro lexico")
+def erro(char):
+    print('erro lexico, caractere "'+char+'" nao reconhecido')
     exit()
 
 
@@ -87,7 +91,7 @@ def espaco(char, estadoAnterior):
         else:
             simbolo(file.read(1), estadoAnterior)
     else:
-        erro()
+        erro(char)
 
 
 def identificador(char, estadoAnterior):
@@ -119,7 +123,7 @@ def identificador(char, estadoAnterior):
             simbolo(file.read(1), estadoAtual)
 
     else:
-        erro
+        erro(char)
 
 
 def operador(char, estadoAnterior):
@@ -160,7 +164,7 @@ def operador(char, estadoAnterior):
             simbolo(file.read(1), estadoAtual)
 
     else:
-        erro()
+        erro(char)
 
 
 def simbolo(char, estadoAnterior):
@@ -196,7 +200,7 @@ def simbolo(char, estadoAnterior):
         else:
             simbolo(file.read(1), estadoAtual)
     else:
-        erro()
+        erro(char)
 
 
 def numero(char, estadoAnterior):
@@ -226,7 +230,7 @@ def numero(char, estadoAnterior):
         else:
             simbolo(file.read(1), estadoAtual)
     else:
-        erro()
+        erro(char)
 
 
 file = open("programa_pam.pam", "r")

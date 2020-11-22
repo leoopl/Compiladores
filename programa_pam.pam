@@ -1,0 +1,14 @@
+int x,y;
+
+func ler: int;
+int z;
+begin
+read z;
+end
+
+begin
+x := ler;
+y := ler;
+x := y + x;
+end
+
