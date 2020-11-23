@@ -17,14 +17,14 @@ listaDeTokens = []
 def opAtrib():
     pos = file.tell()
     prox = file.read(1)
-    print(prox)
+    # print(prox)
     file.seek(pos)
     return True if prox == "=" else False
 
 
 def addToken(e):
     global token
-    print("add " + token)
+    #print("add " + token)
     estado = {
         1: 'ident',
         2: 'op',
@@ -34,7 +34,7 @@ def addToken(e):
     aux = [token, estado.get(e), "", ""]
 
     if e == 1:
-        aux[2] = "reserv" if reservadas.get(token, False) else "id_var"
+        aux[2] = "reserv" if reservadas.get(token, False) else "id"
 
     elif e == 2:
         aux[2] = op.get(token)
@@ -56,7 +56,7 @@ def erro():
 
 def espaco(char, estadoAnterior):
     global token
-    print("espaço: char->" + char+(" ")+token)
+    #print("espaço: char->" + char+(" ")+token)
     estadoAtual = 0
     if estadoAnterior != 0 and estadoAnterior != -1:
         addToken(estadoAnterior)
@@ -92,7 +92,7 @@ def espaco(char, estadoAnterior):
 
 def identificador(char, estadoAnterior):
     global token
-    print("ident: char->" + char+(" ")+token)
+    #print("ident: char->" + char+(" ")+token)
     estadoAtual = 1
 
     if char == " " or char == "\t" or char == "\n" or char == "":
@@ -124,7 +124,7 @@ def identificador(char, estadoAnterior):
 
 def operador(char, estadoAnterior):
     global token
-    print("op: char->" + char+(" ")+token)
+   # print("op: char->" + char+(" ")+token)
     estadoAtual = 2
     if char == " " or char == "\t" or char == "\n" or char == "":
         espaco(file.read(1), estadoAtual)
@@ -165,7 +165,7 @@ def operador(char, estadoAnterior):
 
 def simbolo(char, estadoAnterior):
     global token
-    print("simb: char->" + char+(" ")+token)
+  #  print("simb: char->" + char+(" ")+token)
     estadoAtual = 3
     if char == " " or char == "\t" or char == "\n" or char == "":
         espaco(file.read(1), estadoAtual)
@@ -201,7 +201,7 @@ def simbolo(char, estadoAnterior):
 
 def numero(char, estadoAnterior):
     global token
-    print("num: char->" + char+(" ")+token)
+   # print("num: char->" + char+(" ")+token)
     estadoAtual = 4
     if char == " " or char == "\t" or char == "\n" or char == "":
         espaco(file.read(1), estadoAtual)
@@ -229,7 +229,7 @@ def numero(char, estadoAnterior):
         erro()
 
 
-file = open("programa_pam.pam", "r")
+file = open("input_lexico.pam", "r")
 espaco(file.read(1), -1)
-res = open("tabela_de_tokens.pam", "w")
+res = open("lista_tokens.pam", "w")
 res.write(str(listaDeTokens))
