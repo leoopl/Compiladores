@@ -31,7 +31,7 @@ M = {
         "begin": ["$"]
     },
     "procedimento": {
-        "proc": [["proc", "ident", "reserv"], "id", "parametros", [";", "simb"],  "declara", ["begin", "ident", "reserv"], "sentencas", ["end", "ident", "reserv"], "rotina"]
+        "proc": [["proc", "ident", "reserv"], "id", "parametros", [";", "simb"], "declara", ["begin", "ident", "reserv"], "sentencas", ["end", "ident", "reserv"], "rotina"]
     },
     "funcao": {
         "func": [["func", "ident", "reserv"], "id", "parametros", [":", "simb"], "tipo_func", [";", "simb"], "declara", ["begin", "ident", "reserv"], "sentencas", ["end", "ident", "reserv"], "rotina"]
