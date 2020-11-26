@@ -62,24 +62,6 @@ def getItemKey(item):
         return item[1]
 
 
-def compare(head, token, item_pilha):
-
-    if head == token == "$":
-        return "fim"
-
-    if isTerminal(item_pilha):
-        if head == token or (token == "id"):
-            return "token-valido"
-
-        if head == "$":
-            return "$"
-
-        return "erro"
-
-    valorTabela = tabela_m.get(head, token)
-
-    return "nao-terminal"
-
 
 def sin():
 
