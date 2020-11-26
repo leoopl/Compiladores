@@ -20,6 +20,4 @@ class TSintatica:
         return self.tabela.get(lex, False)  
 
 
-
-    def getCat(self, lex):
-        return self.tabela[lex]["cat"]    
+   

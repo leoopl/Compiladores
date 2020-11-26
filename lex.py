@@ -3,9 +3,9 @@ op = {">": "op_rel", "<": "op_rel",
 ''
 simbolos = {",": "simb", ";": "simb", ":": "simb", "(": "simb", ")": "simb"}
 
-reservadas = {"begin": "reserv", "int": "reserv",
+reservadas = {"begin": "reserv", "int": "reserv", "while": "reserv",
               "end": "reserv", "proc": "reserv", "func": "reserv",
-              "read": "reserv", "until": "reserv", "write": "reserv", "to": "reserv", "do": "reserv", "if": "reserv", "fi": "reserv", "else": "reserv"}
+              "read": "reserv", "until": "reserv", "write": "reserv", "to": "reserv", "do": "reserv", "if": "reserv", "fi": "reserv", "else": "reserv", "then": "reserv"}
 
 
 token = ""

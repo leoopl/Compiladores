@@ -17,7 +17,7 @@ M = {
 
     },
     "variaveis": {
-        "id": ["id_var", "mais_var"],
+        "id": ["id", "mais_var"],
     },
     "mais_var": {
         ",": [[",", "simb"], "variaveis"],
@@ -34,7 +34,7 @@ M = {
         "proc": [["proc", "ident", "reserv"], "id", "parametros", [";", "simb"], "declara", ["begin", "ident", "reserv"], "sentencas", ["end", "ident", "reserv"], "rotina"]
     },
     "funcao": {
-        "func": [["func", "ident", "reserv"], "id", "parametros", [":", "simb"], "tipo_var", [";", "simb"], "declara", ["begin", "ident", "reserv"], "sentencas", ["end", "ident", "reserv"], "rotina"]
+        "func": [["func", "ident", "reserv"], "id", "parametros", [":", "simb"], "tipo_func", [";", "simb"], "declara", ["begin", "ident", "reserv"], "sentencas", ["end", "ident", "reserv"], "rotina"]
     },
     "parametros": {
         "(": [["(", "simb"], "lista_parametros", [")", "simb"]],
@@ -49,7 +49,6 @@ M = {
     "cont_lista_par": {
         ";": [[";", "simb"], "lista_parametros"],
         "$": ["$"],
-        ":": ["$"],
         ")": ["$"]
     },
     "lista_id": {
@@ -59,7 +58,6 @@ M = {
         ",": [[",", "simb"], "lista_id"],
         "$": ["$"],
         ":": ["$"],
-        ")": ["$"]
     },
     "sentencas": {
         "read": ["comando", "mais_sentencas"],
@@ -144,10 +142,10 @@ M = {
         ")": ["$"]
     },
     "condicao": {
-        "id_var": ["expressao", "relacao", "expressao"],
-        "num": ["expressao", "relacao", "expressao"],
-        "(": ["expressao", "relacao", "expressao"],
-        "id_func": ["expressao", "relacao", "expressao"]
+        "id_var": ["expressao", "op_rel", "expressao"],
+        "num": ["expressao", "op_rel", "expressao"],
+        "(": ["expressao", "op_rel", "expressao"],
+        "id_func": ["expressao", "op_rel", "expressao"]
     },
     "pfalsa": {
         "else": [["else", "ident", "reserv"], "sentencas"],
@@ -169,13 +167,12 @@ M = {
         "do": ["$"],
         "then": ["$"],
         ";": ["$"],
-        "op_ad": ["$"]
     },
     "termo": {
         "id_var": ["fator", "mais_fatores"],
         "num": ["fator", "mais_fatores"],
         "(": ["fator", "mais_fatores"],
-        "id_func": ["fator", "mais_fatores"]
+        "id_func": ["fator", "mais_fatores"],
     },
     "mais_fatores": {
         "op_mul": ["op_mul", "fator", "mais_fatores"],
@@ -199,8 +196,17 @@ M = {
 
 
 def get(lin, col):
+
     if not M.get(lin):
         print("erro! não-terminal inexistente")
         exit()
 
-    return M[lin].get(col, False)
+    if col == "int":
+        aux = M[lin].get("tipo_var", False)
+        if not aux:
+            aux = M[lin].get("tipo_func", False)
+
+    else:
+        aux = M[lin].get(col, False)
+
+    return aux
