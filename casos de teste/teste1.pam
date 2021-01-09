@@ -1,0 +1,15 @@
+
+int z, x;
+func ler: int ;
+begin
+read z;
+end
+
+begin
+if x > z
+then
+x:= z;
+else
+z := x;
+fi;
+end

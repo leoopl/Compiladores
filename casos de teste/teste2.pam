@@ -1,0 +1,35 @@
+int x , y ;
+
+func ler : int ;
+int z ;
+begin
+read z ;
+end
+
+proc escreve ( w : int );
+begin
+write w ;
+to x
+do y := 0;
+end;
+end
+
+
+func loop (d : int) : int;
+int l;
+begin
+while l = 1
+do read z;
+end;
+end
+
+begin
+x := ler ;
+y := ler ;
+x := y * x ;
+write x ;
+if y >= 2 
+then write y;
+else write y;
+fi;
+end

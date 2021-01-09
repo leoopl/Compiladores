@@ -1,0 +1,19 @@
+int x,y;
+
+func ler: int;
+int z;
+begin
+read z;
+end
+
+proc escreve(w:int);
+begin
+write w;
+end
+
+begin
+x:= ler;
+y:=ler;
+x := y * x;
+escreve(x);
+end
