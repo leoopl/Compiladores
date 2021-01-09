@@ -1,0 +1,6 @@
+int x,y;
+begin
+read x;
+read y;
+x := y * x;
+end

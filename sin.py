@@ -2,6 +2,7 @@ import models.tabela_m as tabela_m
 from lex import listaDeTokens
 from models.stack import Stack
 from models.tabela_sintatica import TSintatica
+import json
 
 pilha_nt = Stack()
 pilha_nt.push("$")
@@ -9,6 +10,8 @@ pilha_nt.push("programa")
 tabela_sintatica = TSintatica()
 pilha_declara = Stack()
 listaDeTokens.append("$")
+flag_func = False
+flag_proc = False
 
 
 def isTerminal(item):
@@ -16,7 +19,7 @@ def isTerminal(item):
         return True
 
     return (item == "op_ad" or item == "op_mul" or item == "op_atrib" or item == "id_var" or item == "id_func" or
-            item == "id_proc" or item == "num" or item == "$" or item == "int" or item == "id" or item == "op_rel" 
+            item == "id_proc" or item == "num" or item == "$" or item == "int" or item == "id" or item == "op_rel"
             or item == "tipo_var" or item == "tipo_func")
 
 
@@ -62,7 +65,6 @@ def getItemKey(item):
         return item[1]
 
 
-
 def sin():
 
     fim = False
@@ -71,6 +73,7 @@ def sin():
 
         head = getItemKey(pilha_nt.peek())
         token = getItemKey(listaDeTokens[0])
+      
         print("tokens=> " + head + " " + token)
 
         if head == token and token == "$":
@@ -87,6 +90,7 @@ def sin():
 
             addTerminal(aux)
 
+            # or (head == "comando" and token == "to")
             if head == "variaveis" or head == "lista_id":
                 pilha_declara.push("id_var")
 
@@ -107,7 +111,7 @@ def sin():
 
                 if token == "id":
                     aux = tabela_sintatica.check(listaDeTokens[0][0])
-                    if aux or pilha_declara.isEmpty():  # se esta na tabela ou não esta sendo declarado
+                    if aux or pilha_declara.isEmpty():  # se está na tabela ou não esta sendo declarado
                         erro()
 
                     tabela_sintatica.addLexema(
@@ -115,7 +119,7 @@ def sin():
 
                 elif token == "id_var" or token == "id_proc":
                     aux = tabela_sintatica.check(listaDeTokens[0][0])
-                    if not aux:  # se nao esta declarada
+                    if not aux:  # se nao está declarada
                         erro()
 
                 tokenValido()
@@ -126,5 +130,5 @@ def sin():
 
 sin()
 print(tabela_sintatica.tabela)
-res = open("output_sintatico.pam", "w")
-res.write(str(tabela_sintatica.tabela))
+res = open("output_sintatico.json", "w")
+res.write(json.dumps(tabela_sintatica.tabela))
