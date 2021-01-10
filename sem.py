@@ -90,11 +90,14 @@ def calc():
             if exp[0] == "+":
                 output.push(v1+v2)
             elif exp[0] == '-':
-                output.push(v1-v2)
+                output.push(v2-v1)
             elif exp[0] == '*':
                 output.push(v1*v2)
             elif exp[0] == '/':
-                output.push(v1/v2)
+                if v1 == 0:
+                    print('erro! Operação inválida, divisão por zero')
+                    exit()
+                output.push(int(v2/v1))
             else:
                 print('erro! Operação inválida')
                 exit()
@@ -117,8 +120,7 @@ def analise_semantica(data):
     if flag_atrib:
         atribuicao(data)
 
-
-atrib = ['x', ':=', '(', '1', '+', '2', ')', '*', '(', '3', '+', '4', ')']
+atrib = ['x', ':=', '(', '11', '+', '2', ')', '-', '(', '3', '+', '4', ')']
 
 res = calc()
 print(res)
