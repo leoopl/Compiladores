@@ -7,98 +7,87 @@ tabela_sintatica = {}
 # {head: , itemKey: , token: , valueToken: , isTerminal: }
 
 
-def precedence(op, opStack):
-
-    if op in ['*', '/'] and opStack in ['+', '-']:
-        return True
-
-    if op == '(' or opStack == '(':
-        return True
-
-    if op in ['+', '-', ')']:
-        return False
-
-    else:
-        return False
+def condicional(p, listaDeTokens):
+    print(p, listaDeTokens)
 
 
-def toPostfix():
-    global atrib
-    global tabela_sintatica
-    closeParFlag = False
-    openParCount = 0
-    token = atrib.pop(0)
-    output = []
-    stack = Stack()
 
-    atrib.pop(0)
-    print('inicio=>' + str(atrib))
-    while len(atrib) > 0:
-        if atrib[0].isnumeric():
-            print('add isnumeric ' + atrib[0])
-            output.append(int(atrib.pop(0)))
 
-        elif atrib[0] not in ['+', '-', '*', '/', '(', ')']:
-            if tabela_sintatica.get(atrib[0], False) and tabela_sintatica[atrib[0]].value != '':
-                output.append(int(tabela_sintatica[atrib.pop(0)].value))
-            else:
-                print('erro! valor de identificador inválido.')
-                exit()
 
+def infixToPostfix(tokenList):
+    prec = {}
+    prec["*"] = 3
+    prec["/"] = 3
+    prec["+"] = 2
+    prec["-"] = 2
+    prec["("] = 1
+    prec[">"] = 0
+    prec["<"] = 0
+    prec["="] = 0
+
+    opStack = Stack()
+    postfixList = []
+    for token in tokenList:
+        if token.isnumeric() or token not in ['+', '-', '*', '/', '(', ')', '>', '<', '=']:
+            postfixList.append(token)
+        elif token == '(':
+            opStack.push(token)
+        elif token == ')':
+            topToken = opStack.pop()
+            while topToken != '(':
+                postfixList.append(topToken)
+                topToken = opStack.pop()
         else:
+            while (not opStack.isEmpty()) and \
+                    (prec[opStack.peek()] >= prec[token]):
+                postfixList.append(opStack.pop())
+            opStack.push(token)
 
-            # push
-            if stack.isEmpty() or precedence(atrib[0], stack.peek()):
-
-                print('push ' + atrib[0])
-                stack.push(atrib.pop(0))
-
-            # pop
-            else:
-                if atrib[0] == ')':
-                    while stack.peek() != '(':
-                        print('add ' + stack.peek())
-                        output.append(stack.pop())
-                    atrib.pop(0)
-                    stack.pop()
-                else:
-                    print('add ' + stack.peek())
-                    output.append(stack.pop())
-
-    while not stack.isEmpty():
-
-        print('add ' + stack.peek())
-        output.append(stack.pop())
-
-    print('output:')
-    print(output)
-    return token, output
+    while not opStack.isEmpty():
+        postfixList.append(opStack.pop())
+    return postfixList
 
 
-def calc():
-    token, exp = toPostfix()
+def calc(exp, tabela_sintatica):
+    postFix = infixToPostfix(exp)
+    print(postFix)
     output = Stack()
-    print(token, exp)
-    while len(exp) > 0:
-        if type(exp[0]) == int:
-            output.push(exp.pop(0))
+    while len(postFix) > 0:
+        if postFix[0].isnumeric():
+            output.push(postFix.pop(0))
+
+        elif postFix[0] not in ['+', '-', '*', '/', '(', ')', '>', '<', '=']:
+            output.push(tabela_sintatica[postFix.pop(0)]['value'])
 
         else:
             v1 = output.pop()
             v2 = output.pop()
+            print(v1, v2)
+            if not v1.isnumeric() or not v2.isnumeric():
+                print('erro! tipo não suportado')
+                exit()
+            else:
+                v1 = int(v1)
+                v2 = int(v2)
 
-            if exp[0] == "+":
-                output.push(v1+v2)
-            elif exp[0] == '-':
-                output.push(v1-v2)
-            elif exp[0] == '*':
-                output.push(v1*v2)
-            elif exp[0] == '/':
-                output.push(v1/v2)
+            if postFix[0] == "+":
+                output.push(str(v1+v2))
+            elif postFix[0] == '-':
+                output.push(str(v2-v1))
+            elif postFix[0] == '*':
+                output.push(str(v1*v2))
+            elif postFix[0] == '/':
+                output.push(str(v2/v1))
+            elif postFix[0] == '=':
+                output.push(str(v1 == v2))
+            elif postFix[0] == '<':
+                output.push(str(v2 < v1))
+            elif postFix[0] == '>':
+                output.push(str(v2 > v1))
             else:
                 print('erro! Operação inválida')
                 exit()
-            exp.pop(0)
+            postFix.pop(0)
     return output.pop()
 
 
@@ -118,7 +107,10 @@ def analise_semantica(data):
         atribuicao(data)
 
 
-atrib = ['x', ':=', '(', '1', '+', '2', ')', '*', '(', '3', '+', '4', ')']
+atrib = ['(', '3', '+', '4', ')', '/', '(', '3', '+', '4', ')']
 
-res = calc()
+
+
+res = calc(atrib, {})
 print(res)
+

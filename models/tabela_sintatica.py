@@ -1,7 +1,17 @@
-class TSintatica:
+
+
+class Singleton:
+    _instance = None
+    tabela = None
 
     def __init__(self):
         self.tabela = {}
+
+    @classmethod
+    def instance(cls):
+        if cls._instance is None:
+            cls._instance = cls()
+        return cls._instance
 
     def addLexema(self, lex, cat):
         aux = self.tabela.get(lex[0], False)
@@ -17,7 +27,4 @@ class TSintatica:
         return False
 
     def check(self, lex):
-        return self.tabela.get(lex, False)  
-
-
-   
+        return self.tabela.get(lex, False)
