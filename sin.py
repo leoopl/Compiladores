@@ -1,17 +1,18 @@
 import models.tabela_m as tabela_m
 from lex import listaDeTokens
 from models.stack import Stack
-from models.tabela_sintatica import TSintatica
+from models.tabela_sintatica import Singleton
 import json
+import sem
 
 pilha_nt = Stack()
 pilha_nt.push("$")
 pilha_nt.push("programa")
-tabela_sintatica = TSintatica()
+tabela_sintatica = Singleton.instance()
 pilha_declara = Stack()
 listaDeTokens.append("$")
-flag_func = False
-flag_proc = False
+pilha_condicional = Stack()
+p = 0
 
 
 def isTerminal(item):
@@ -31,11 +32,12 @@ def erro():
 def addTerminal(item):
     for x in reversed(item):
         pilha_nt.push(x)
-    print("pilha=> " + pilha_nt.toString())
+    #print("pilha=> " + pilha_nt.toString())
 
 
 def tokenValido():
-    listaDeTokens.pop(0)
+    global p
+    p += 1
     pilha_nt.pop()
 
 
@@ -72,9 +74,9 @@ def sin():
     while not fim:
 
         head = getItemKey(pilha_nt.peek())
-        token = getItemKey(listaDeTokens[0])
-      
-        print("tokens=> " + head + " " + token)
+        token = getItemKey(listaDeTokens[p])
+
+        #print("tokens=> " + head + " " + token)
 
         if head == token and token == "$":
             fim = True
@@ -105,22 +107,32 @@ def sin():
             if head == "$":
                 pilha_nt.pop()
                 pilha_nt.pop()
-                print("pilha=> " + pilha_nt.toString())
+                #("pilha=> " + pilha_nt.toString())
 
             elif head == token or (token == "int" and (head == "tipo_var" or head == "tipo_func")):
 
                 if token == "id":
-                    aux = tabela_sintatica.check(listaDeTokens[0][0])
+                    aux = tabela_sintatica.check(listaDeTokens[p][0])
                     if aux or pilha_declara.isEmpty():  # se está na tabela ou não esta sendo declarado
                         erro()
 
                     tabela_sintatica.addLexema(
-                        listaDeTokens[0], pilha_declara.pop())
+                        listaDeTokens[p], pilha_declara.pop())
 
                 elif token == "id_var" or token == "id_proc":
-                    aux = tabela_sintatica.check(listaDeTokens[0][0])
+                    aux = tabela_sintatica.check(listaDeTokens[p][0])
                     if not aux:  # se nao está declarada
                         erro()
+
+                if token == 'if' or token == 'proc' or token == 'func':
+                    pilha_condicional.push({"token": token, "position": p})
+                    print(token)
+
+                elif not pilha_condicional.isEmpty and token == 'fi' or token == 'end':
+                    aux = pilha_condicional.pop()
+                    print(aux)
+                    if pilha_condicional.isEmpty and aux['token'] == 'if':
+                        sem.condicional(aux['position'], listaDeTokens)
 
                 tokenValido()
 
