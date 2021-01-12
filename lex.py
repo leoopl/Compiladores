@@ -229,7 +229,7 @@ def numero(char, estadoAnterior):
         erro()
 
 
-file = open("casos de teste/teste2.pam", "r")
+file = open("input_lexico.pam", "r")
 espaco(file.read(1), -1)
 res = open("lista_tokens.pam", "w")
 res.write(str(listaDeTokens))

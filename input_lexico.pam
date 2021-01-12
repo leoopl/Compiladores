@@ -3,7 +3,7 @@ int x , y ;
 func ler : int ;
 int z ;
 begin
-read z ;
+read z , x ;
 end
 
 proc escreve ( w : int ) ;
@@ -12,8 +12,9 @@ write w ;
 end
 
 begin
-x := ler ;
-y := ler ;
+x := 2 ;
+y := 2 ;
 x := y * x ;
-write x ;
+do x := x + 1 ; until x > 10 ;
+write x ; 
 end

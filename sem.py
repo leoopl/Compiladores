@@ -49,14 +49,14 @@ def condicional(p):
 
 
 def wrCont(p):
-    next = listaDeTokens[p]  # listaDeTokens+1
+    next = listaDeTokens[p] #listaDeTokens+1
     while (next[0] != ';'):
         if next[2] == 'id' or next[3] == 'id_var':
             if (tabela_sintatica.tabela[next[0]]['value']).isnumeric():
-                pass
+              pass
             else:
-                print("Error!!!")
-                exit()
+              print("Error!!!")
+              exit()         
         elif next[0] == ',':
             pass
         else:
