@@ -12,9 +12,9 @@ write w ;
 end
 
 begin
-x := 2 ;
+x := 0 ;
 y := 2 ;
-x := y * x ;
+x := y / x ;
 do x := x + 1 ; until x > 10 ;
 write x ; 
 end
