@@ -13,7 +13,7 @@ class Singleton:
             cls._instance = cls()
         return cls._instance
 
-    def addLexema(self, lex, cat):
+    def addLexema(self, lex, cat, fp=None):
         aux = self.tabela.get(lex[0], False)
 
         if aux == False:
@@ -23,6 +23,9 @@ class Singleton:
                 "value": "",
                 "escopo": "global"
             }
+            if cat == "id_func" or cat == "id_proc":
+                self.tabela[lex[0]]["inicialPosition"] = fp
+
             return self.tabela.get(lex[0])
         return False
 
