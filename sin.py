@@ -12,6 +12,7 @@ tabela_sintatica = Singleton.instance()
 pilha_declara = Stack()
 listaDeTokens.append("$")
 pilha_condicional = Stack()
+fila_analise_semantica = []
 p = 0
 
 
@@ -130,22 +131,22 @@ def sin():
 
                 # semantico
 
+                    # em caso de comandos de bloco
                 if token == 'if' or token == 'proc' or token == 'func' or token == "to" or token == "while":
                     pilha_condicional.push({"token": token, "position": p})
 
-                elif not pilha_condicional.isEmpty() and (token == 'fi' or token == 'end'):
+                elif not pilha_condicional.isEmpty() and (token == 'fi' or token == 'end'): # em caso de comandos de bloco
                     aux = pilha_condicional.pop()
                     if pilha_condicional.isEmpty():
-                        if aux['token'] == "if":
-                            sem.condicional(aux['position'])
-                        elif aux['token'] == "to":
-                            sem.toDo(aux['position'])
-                        elif aux['token'] == "while":
-                            sem.loop(aux['position'])
+                        fila_analise_semantica.append(aux['position'])
+                    #
 
+                    # comandos sem bloco
                 elif pilha_condicional.isEmpty():
-                    sem.check(p)
-                ##########################
+                    if token == "op_atrib" or token == "do" or token == "read" or token == "write":
+                        fila_analise_semantica.append(p)
+                    #    
+                #
 
                 tokenValido()
 
@@ -154,6 +155,8 @@ def sin():
 
 
 sin()
+for i in fila_analise_semantica:
+    sem.check(i)
 print(tabela_sintatica.tabela)
 res = open("output_sintatico.json", "w")
 res.write(json.dumps(tabela_sintatica.tabela))

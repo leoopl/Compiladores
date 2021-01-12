@@ -9,9 +9,9 @@ def check(p):
     if listaDeTokens[p][0] == 'if':
         return condicional(p)
     elif listaDeTokens[p][0] == ":=":
-        return atribuicao(p-1)
+        return atribuicao(p - 1)
     elif listaDeTokens[p][0] == "read" or listaDeTokens[p][0] == "write":
-        return read_write(p)
+        return write_read(p)
     elif listaDeTokens[p][0] == "to":
         return toDo(p)
     elif listaDeTokens[p][0] == "while":
@@ -48,13 +48,36 @@ def condicional(p):
     return p
 
 
-def read_write(p):
-    print("read_write")
+def wrCont(p):
+    next = listaDeTokens[p]  # listaDeTokens+1
+    while (next[0] != ';'):
+        if next[2] == 'id' or next[3] == 'id_var':
+            if (tabela_sintatica.tabela[next[0]]['value']).isnumeric():
+                pass
+            else:
+                print("Error!!!")
+                exit()
+        elif next[0] == ',':
+            pass
+        else:
+            print("Error read or write variable")
+            exit()
+        p = p+1
+        next = listaDeTokens[p]
     return p
 
 
+def write_read(p):
+    now = listaDeTokens[p]
+    if now[0] == 'read':
+        return wrCont(p+1)
+
+    elif now[0] == 'write':
+        return wrCont(p+1)
+
+
 def toDo(p):
-    id = listaDeTokens[p+1][0]
+    id = listaDeTokens[p + 1][0]
     p += 3
     while listaDeTokens[p][0] != 'end':
         p = check(p) + 1
@@ -70,7 +93,7 @@ def loop(p):
         condition.append(listaDeTokens[p][0])
         p += 1
     conditionValue = calc(condition)
-    p +=1 
+    p += 1
     i = p
     while conditionValue == "True":
         if listaDeTokens[i][0] == "end":
@@ -96,7 +119,7 @@ def doUntil(p):
     conditionValue = calc(condition)
     p += 1
     i = p
-    while conditionValue == "True":
+    while conditionValue == "False":
         if listaDeTokens[i][0] == "until":
             i = p
         i = check(i) + 1
@@ -116,6 +139,7 @@ def atribuicao(p):
 
 
 def infixToPostfix(tokenList):
+    print(tokenList)
     prec = {}
     prec["*"] = 3
     prec["/"] = 3
@@ -131,7 +155,9 @@ def infixToPostfix(tokenList):
     opStack = Stack()
     postfixList = []
     for token in tokenList:
-        if token.isnumeric() or token not in ['+', '-', '*', '/', '(', ')', '>', '<', '=', '<=', '>=']:
+        if token.isnumeric() or token not in [
+                '+', '-', '*', '/', '(', ')', '>', '<', '=', '<=', '>='
+        ]:
             if not token.isnumeric():
                 token = tabela_sintatica.tabela[token]['value']
                 if not token.isnumeric():
@@ -161,13 +187,15 @@ def calc(exp):
     tabela_sintatica = Singleton.instance()
     # print(exp)
     postFix = infixToPostfix(exp)
-   # print(postFix)
+    # print(postFix)
     output = Stack()
     while len(postFix) > 0:
         if postFix[0].isnumeric():
             output.push(postFix.pop(0))
 
-        elif postFix[0] not in ['+', '-', '*', '/', '(', ')', '>', '<', '=', '<=', '>=']:
+        elif postFix[0] not in [
+                '+', '-', '*', '/', '(', ')', '>', '<', '=', '<=', '>='
+        ]:
             output.push(tabela_sintatica.tabela[postFix.pop(0)]['value'])
 
         else:
@@ -182,13 +210,16 @@ def calc(exp):
                 v2 = int(v2)
 
             if postFix[0] == "+":
-                output.push(str(v1+v2))
+                output.push(str(v1 + v2))
             elif postFix[0] == '-':
-                output.push(str(v2-v1))
+                output.push(str(v2 - v1))
             elif postFix[0] == '*':
-                output.push(str(v1*v2))
+                output.push(str(v1 * v2))
             elif postFix[0] == '/':
-                output.push(str(v2/v1))
+                if isinstance((v2 / v1), float):
+                    print('Erro! tipo não suportado')
+                    exit()
+                output.push(str(int(v2 / v1)))
             elif postFix[0] == '=':
                 output.push(str(v1 == v2))
             elif postFix[0] == '<':
@@ -204,3 +235,7 @@ def calc(exp):
                 exit()
             postFix.pop(0)
     return output.pop()
+
+
+# tabela_sintatica.tabela =
+# listaDeTokens =
