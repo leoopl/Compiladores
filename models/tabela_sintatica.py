@@ -23,9 +23,6 @@ class Singleton:
                 "value": "",
                 "escopo": "global"
             }
-            if cat == "id_func" or cat == "id_proc":
-                self.tabela[lex[0]]["inicialPosition"] = fp
-
             return self.tabela.get(lex[0])
         return False
 

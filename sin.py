@@ -158,5 +158,5 @@ sin()
 for i in fila_analise_semantica:
     sem.check(i)
 print(tabela_sintatica.tabela)
-res = open("output_sintatico.json", "w")
+res = open("output_sintatico.pam", "w")
 res.write(json.dumps(tabela_sintatica.tabela))
