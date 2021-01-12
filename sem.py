@@ -188,9 +188,11 @@ def calc(exp):
             elif postFix[0] == '*':
                 output.push(str(v1*v2))
             elif postFix[0] == '/':
+                
                 if isinstance((v2/v1),float):
                     print('erro! tipo não suportado')
                     exit()
+                    
                 output.push(str(v2/v1))
             elif postFix[0] == '=':
                 output.push(str(v1 == v2))
