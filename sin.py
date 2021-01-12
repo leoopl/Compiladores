@@ -15,6 +15,10 @@ pilha_condicional = Stack()
 p = 0
 
 
+escopo = Stack()
+escopo
+
+
 def isTerminal(item):
     if type(item) == list:
         return True
@@ -32,7 +36,7 @@ def erro():
 def addTerminal(item):
     for x in reversed(item):
         pilha_nt.push(x)
-    #print("pilha=> " + pilha_nt.toString())
+    # print("pilha=> " + pilha_nt.toString())
 
 
 def tokenValido():
@@ -76,7 +80,7 @@ def sin():
         head = getItemKey(pilha_nt.peek())
         token = getItemKey(listaDeTokens[p])
 
-        #print("tokens=> " + head + " " + token)
+        # print("tokens=> " + head + " " + token)
 
         if head == token and token == "$":
             fim = True
@@ -107,7 +111,7 @@ def sin():
             if head == "$":
                 pilha_nt.pop()
                 pilha_nt.pop()
-                #("pilha=> " + pilha_nt.toString())
+                # ("pilha=> " + pilha_nt.toString())
 
             elif head == token or (token == "int" and (head == "tipo_var" or head == "tipo_func")):
 
@@ -117,22 +121,31 @@ def sin():
                         erro()
 
                     tabela_sintatica.addLexema(
-                        listaDeTokens[p], pilha_declara.pop())
+                        listaDeTokens[p], pilha_declara.pop(), p - 1)
 
                 elif token == "id_var" or token == "id_proc":
                     aux = tabela_sintatica.check(listaDeTokens[p][0])
                     if not aux:  # se nao está declarada
                         erro()
 
-                if token == 'if' or token == 'proc' or token == 'func':
-                    pilha_condicional.push({"token": token, "position": p})
-                    print(token)
+                # semantico
 
-                elif not pilha_condicional.isEmpty and token == 'fi' or token == 'end':
+                if token == 'if' or token == 'proc' or token == 'func' or token == "to" or token == "while":
+                    pilha_condicional.push({"token": token, "position": p})
+
+                elif not pilha_condicional.isEmpty() and (token == 'fi' or token == 'end'):
                     aux = pilha_condicional.pop()
-                    print(aux)
-                    if pilha_condicional.isEmpty and aux['token'] == 'if':
-                        sem.condicional(aux['position'], listaDeTokens)
+                    if pilha_condicional.isEmpty():
+                        if aux['token'] == "if":
+                            sem.condicional(aux['position'])
+                        elif aux['token'] == "to":
+                            sem.toDo(aux['position'])
+                        elif aux['token'] == "while":
+                            sem.loop(aux['position'])
+
+                elif pilha_condicional.isEmpty():
+                    sem.check(p)
+                ##########################
 
                 tokenValido()
 

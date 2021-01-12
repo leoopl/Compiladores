@@ -24,12 +24,15 @@ end;
 end
 
 begin
-x := ler ;
-y := ler ;
+x := 4 ;
+y := 5 ;
 x := y * x ;
 write x ;
 if y >= 2 
 then write y;
+while y < 10
+do y := y + 1;
+end;
 else write y;
 fi;
 end
