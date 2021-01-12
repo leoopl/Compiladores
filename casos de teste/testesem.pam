@@ -1,0 +1,22 @@
+int x, y;
+
+func ler: int;
+int z;
+begin
+read z;
+end
+
+begin
+x:= 2;
+y:= 2;
+if x > y
+then 
+while y < x
+do y := y + 1;
+end;
+else
+while x < y
+do x := x + 1;
+end;
+fi;
+end

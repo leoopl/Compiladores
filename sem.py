@@ -22,29 +22,30 @@ def check(p):
 
 
 def condicional(p):
-    print('cond')
     p += 1
     condition = []
     while listaDeTokens[p][0] != 'then':
         condition.append(listaDeTokens[p][0])
         p += 1
     conditionValue = calc(condition)
-    #print(condition, conditionValue)
+    pilha_bloco = Stack()
     if conditionValue == "False":
-        while listaDeTokens[p][0] != 'else' and listaDeTokens[p][0] != 'fi':
+        while (listaDeTokens[p][0] != 'else' and listaDeTokens[p][0] != 'fi') or not pilha_bloco.isEmpty():
+            if listaDeTokens[p][0] == 'if' or listaDeTokens[p][0] == "to" or listaDeTokens[p][0] == "while":
+                pilha_bloco.push(listaDeTokens[p][0])
+            elif listaDeTokens[p][0] == 'end' or listaDeTokens[p][0] == "fi":
+                pilha_bloco.pop()
+
             p += 1
 
         if listaDeTokens[p][0] == 'fi':
             return p
         p += 1
-    # print(listaDeTokens[p][0])
     while listaDeTokens[p][0] != 'else' and listaDeTokens[p][0] != 'fi':
         p = check(p) + 1
 
     while listaDeTokens[p][0] != 'fi':
         p += 1
-    #tabela_sintatica = Singleton.instance()
-    # print(tabela_sintatica.tabela)
     return p
 
 
@@ -95,12 +96,27 @@ def loop(p):
     conditionValue = calc(condition)
     p += 1
     i = p
+
     while conditionValue == "True":
-        if listaDeTokens[i][0] == "end":
-            endPosition = i
-            i = p
-        i = check(i) + 1
-        conditionValue = calc(condition)
+        while listaDeTokens[i][0] != 'end':
+            i = check(i) + 1
+            conditionValue = calc(condition)
+
+        endPosition = i
+        i = p
+    
+    #caso o while inicie com condição falsa
+    if endPosition == None:
+        pilha_bloco = Stack()
+        while listaDeTokens[p][0] != 'end' or not pilha_bloco.isEmpty():
+            if listaDeTokens[p][0] == 'if' or listaDeTokens[p][0] == "to" or listaDeTokens[p][0] == "while":
+                pilha_bloco.push(listaDeTokens[p][0])
+            elif listaDeTokens[p][0] == 'end' or listaDeTokens[p][0] == "fi":
+                pilha_bloco.pop()
+
+            p += 1
+        endPosition = p
+
     return endPosition
 
 
@@ -139,7 +155,6 @@ def atribuicao(p):
 
 
 def infixToPostfix(tokenList):
-    print(tokenList)
     prec = {}
     prec["*"] = 3
     prec["/"] = 3
@@ -161,7 +176,6 @@ def infixToPostfix(tokenList):
             if not token.isnumeric():
                 token = tabela_sintatica.tabela[token]['value']
                 if not token.isnumeric():
-                    # print(postfixList)
                     print("erro! variável sem valor atribuído." + token)
                     exit()
             postfixList.append(token)
@@ -185,9 +199,7 @@ def infixToPostfix(tokenList):
 
 def calc(exp):
     tabela_sintatica = Singleton.instance()
-    # print(exp)
     postFix = infixToPostfix(exp)
-    # print(postFix)
     output = Stack()
     while len(postFix) > 0:
         if postFix[0].isnumeric():
@@ -201,7 +213,6 @@ def calc(exp):
         else:
             v1 = output.pop()
             v2 = output.pop()
-            #print(v1, v2)
             if not v1.isnumeric() or not v2.isnumeric():
                 print('erro! tipo não suportado')
                 exit()
@@ -216,7 +227,10 @@ def calc(exp):
             elif postFix[0] == '*':
                 output.push(str(v1 * v2))
             elif postFix[0] == '/':
-                if isinstance((v2 / v1), float):
+                if v1 == 0:
+                    print("erro! divisão por 0")
+                    exit()
+                if v2 % v1 != 0:
                     print('Erro! tipo não suportado')
                     exit()
                 output.push(str(int(v2 / v1)))
@@ -235,7 +249,3 @@ def calc(exp):
                 exit()
             postFix.pop(0)
     return output.pop()
-
-
-# tabela_sintatica.tabela =
-# listaDeTokens =
