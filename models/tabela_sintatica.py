@@ -1,5 +1,3 @@
-
-
 class Singleton:
     _instance = None
     tabela = None

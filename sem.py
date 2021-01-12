@@ -208,4 +208,3 @@ def calc(exp):
                 print('erro! Operação inválida')
                 exit()
             postFix.pop(0)
-    return output.pop()
