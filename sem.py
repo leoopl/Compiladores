@@ -22,14 +22,12 @@ def check(p):
 
 
 def condicional(p):
-    print('cond')
     p += 1
     condition = []
     while listaDeTokens[p][0] != 'then':
         condition.append(listaDeTokens[p][0])
         p += 1
     conditionValue = calc(condition)
-    #print(condition, conditionValue)
     if conditionValue == "False":
         while listaDeTokens[p][0] != 'else' and listaDeTokens[p][0] != 'fi':
             p += 1
@@ -37,14 +35,11 @@ def condicional(p):
         if listaDeTokens[p][0] == 'fi':
             return p
         p += 1
-    # print(listaDeTokens[p][0])
     while listaDeTokens[p][0] != 'else' and listaDeTokens[p][0] != 'fi':
         p = check(p) + 1
 
     while listaDeTokens[p][0] != 'fi':
         p += 1
-    #tabela_sintatica = Singleton.instance()
-    # print(tabela_sintatica.tabela)
     return p
 
 
@@ -95,12 +90,15 @@ def loop(p):
     conditionValue = calc(condition)
     p += 1
     i = p
+
     while conditionValue == "True":
-        if listaDeTokens[i][0] == "end":
-            endPosition = i
-            i = p
-        i = check(i) + 1
-        conditionValue = calc(condition)
+        while listaDeTokens[i][0] != 'end':
+            i = check(i) + 1
+            conditionValue = calc(condition)
+
+        endPosition = i
+        i = p
+
     return endPosition
 
 
@@ -139,7 +137,6 @@ def atribuicao(p):
 
 
 def infixToPostfix(tokenList):
-    print(tokenList)
     prec = {}
     prec["*"] = 3
     prec["/"] = 3
@@ -161,7 +158,6 @@ def infixToPostfix(tokenList):
             if not token.isnumeric():
                 token = tabela_sintatica.tabela[token]['value']
                 if not token.isnumeric():
-                    # print(postfixList)
                     print("erro! variável sem valor atribuído." + token)
                     exit()
             postfixList.append(token)
@@ -185,9 +181,7 @@ def infixToPostfix(tokenList):
 
 def calc(exp):
     tabela_sintatica = Singleton.instance()
-    # print(exp)
     postFix = infixToPostfix(exp)
-    # print(postFix)
     output = Stack()
     while len(postFix) > 0:
         if postFix[0].isnumeric():
@@ -201,7 +195,6 @@ def calc(exp):
         else:
             v1 = output.pop()
             v2 = output.pop()
-            #print(v1, v2)
             if not v1.isnumeric() or not v2.isnumeric():
                 print('erro! tipo não suportado')
                 exit()
@@ -235,7 +228,3 @@ def calc(exp):
                 exit()
             postFix.pop(0)
     return output.pop()
-
-
-# tabela_sintatica.tabela =
-# listaDeTokens =
