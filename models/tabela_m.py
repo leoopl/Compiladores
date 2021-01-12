@@ -1,23 +1,23 @@
 M = {
     "programa": {
         "tipo_var": ["declara", "rotina", ["begin", "ident", "reserv"], "sentencas", ["end", "ident", "reserv"]],
-        "proc": ["rotina", ["begin", "ident", "reserv"], "sentencas", ["end", "ident", "reserv"]],
-        "func": ["rotina", ["begin", "ident", "reserv"], "sentencas", ["end", "ident", "reserv"]],
-        "begin": [["begin", "ident", "reserv"], "sentencas", ["end", "ident", "reserv"]],
+        "proc": ["declara", "rotina", ["begin", "ident", "reserv"], "sentencas", ["end", "ident", "reserv"]],
+        "func": ["declara", "rotina", ["begin", "ident", "reserv"], "sentencas", ["end", "ident", "reserv"]],
+        "begin": ["declara", "rotina", ["begin", "ident", "reserv"], "sentencas", ["end", "ident", "reserv"]],
 
     },
     "declara": {
+
         "tipo_var": ["tipo_var", "variaveis", [";", "simb"], "declara"],
         "$": ["$"],
+        ";": ["$"],
         "proc": ["$"],
         "func": ["$"],
         "begin": ["$"]
 
     },
     "variaveis": {
-        "id_var": ["id_var", "mais_var"],
-        "id_proc": ["id_proc", "mais_var"],
-        "id_func": [["id_func", "mais_var"]]
+        "id": ["id", "mais_var"],
     },
     "mais_var": {
         ",": [[",", "simb"], "variaveis"],
@@ -31,10 +31,10 @@ M = {
         "begin": ["$"]
     },
     "procedimento": {
-        "proc": [["proc", "ident", "reserv"], "id_proc", "parametros", [";", "simb"], "declara", ["begin", "ident", "reserv"], "sentencas", ["end", "ident", "reserv"], "rotina"]
+        "proc": [["proc", "ident", "reserv"], "id", "parametros", [";", "simb"], "declara", ["begin", "ident", "reserv"], "sentencas", ["end", "ident", "reserv"], "rotina"]
     },
     "funcao": {
-        "func": [["func", "ident", "reserv"], "id_func", "parametros", [";", "simb"], "declara", ["begin", "ident", "reserv"], "sentencas", ["end", "ident", "reserv"], "rotina"]
+        "func": [["func", "ident", "reserv"], "id", "parametros", [":", "simb"], "tipo_func", [";", "simb"], "declara", ["begin", "ident", "reserv"], "sentencas", ["end", "ident", "reserv"], "rotina"]
     },
     "parametros": {
         "(": [["(", "simb"], "lista_parametros", [")", "simb"]],
@@ -44,22 +44,20 @@ M = {
 
     },
     "lista_parametros": {
-        "id_var": ["lista_id", [":", "simb"], "tipo_var", "cont_lista_par"]
+        "id": ["lista_id", [":", "simb"], "tipo_var", "cont_lista_par"]
     },
     "cont_lista_par": {
         ";": [[";", "simb"], "lista_parametros"],
         "$": ["$"],
-        ":": ["$"],
         ")": ["$"]
     },
     "lista_id": {
-        "id_var": ["id", "cont_lista_id"]
+        "id": ["id", "cont_lista_id"]
     },
     "cont_lista_id": {
         ",": [[",", "simb"], "lista_id"],
         "$": ["$"],
         ":": ["$"],
-        ")": ["$"]
     },
     "sentencas": {
         "read": ["comando", "mais_sentencas"],
@@ -144,10 +142,10 @@ M = {
         ")": ["$"]
     },
     "condicao": {
-        "id_var": ["expressao", "relacao", "expressao"],
-        "num": ["expressao", "relacao", "expressao"],
-        "(": ["expressao", "relacao", "expressao"],
-        "id_func": ["expressao", "relacao", "expressao"]
+        "id_var": ["expressao", "op_rel", "expressao"],
+        "num": ["expressao", "op_rel", "expressao"],
+        "(": ["expressao", "op_rel", "expressao"],
+        "id_func": ["expressao", "op_rel", "expressao"]
     },
     "pfalsa": {
         "else": [["else", "ident", "reserv"], "sentencas"],
@@ -169,13 +167,12 @@ M = {
         "do": ["$"],
         "then": ["$"],
         ";": ["$"],
-        "op_ad": ["$"]
     },
     "termo": {
         "id_var": ["fator", "mais_fatores"],
         "num": ["fator", "mais_fatores"],
         "(": ["fator", "mais_fatores"],
-        "id_func": ["fator", "mais_fatores"]
+        "id_func": ["fator", "mais_fatores"],
     },
     "mais_fatores": {
         "op_mul": ["op_mul", "fator", "mais_fatores"],
@@ -192,15 +189,24 @@ M = {
         "id_var": ["id_var"],
         "num": ["num"],
         "(":  [["(", "simb"], "expressao", [")", "simb"]],
-        "id_func": ["id", "argumentos"]
+        "id_func": ["id_func", "argumentos"]
     }
 
 }
 
 
 def get(lin, col):
+
     if not M.get(lin):
         print("erro! não-terminal inexistente")
         exit()
 
-    return M[lin].get(col, False)
+    if col == "int":
+        aux = M[lin].get("tipo_var", False)
+        if not aux:
+            aux = M[lin].get("tipo_func", False)
+
+    else:
+        aux = M[lin].get(col, False)
+
+    return aux

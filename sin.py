@@ -1,20 +1,32 @@
-import tabela_m as tabela_m
+import models.tabela_m as tabela_m
 from lex import listaDeTokens
-from stack import Stack
+from models.stack import Stack
+from models.tabela_sintatica import Singleton
+import json
+import sem
 
-print(tabela_m.get("mais_fatores", "op_mul"))
 pilha_nt = Stack()
 pilha_nt.push("$")
 pilha_nt.push("programa")
-
+tabela_sintatica = Singleton.instance()
+pilha_declara = Stack()
 listaDeTokens.append("$")
+pilha_condicional = Stack()
+fila_analise_semantica = []
+p = 0
+
+
+escopo = Stack()
+escopo
 
 
 def isTerminal(item):
     if type(item) == list:
         return True
 
-    return (item == "op_ad" or item == "op_mul" or item == "op_atrib" or item == "id_var" or item == "id_func" or item == "id_proc" or item == "num" or item == "$" or item == "tipo_var")
+    return (item == "op_ad" or item == "op_mul" or item == "op_atrib" or item == "id_var" or item == "id_func" or
+            item == "id_proc" or item == "num" or item == "$" or item == "int" or item == "id" or item == "op_rel"
+            or item == "tipo_var" or item == "tipo_func")
 
 
 def erro():
@@ -25,11 +37,18 @@ def erro():
 def addTerminal(item):
     for x in reversed(item):
         pilha_nt.push(x)
+    # print("pilha=> " + pilha_nt.toString())
+
+
+def tokenValido():
+    global p
+    p += 1
+    pilha_nt.pop()
 
 
 def getItemKey(item):
 
-    # para simbolos terminais e vazio($)
+    # para simbolos nao-terminais, vazio($)
     if type(item) == str:
         return item
 
@@ -39,8 +58,11 @@ def getItemKey(item):
         return item[2]
 
     elif item[1] == "ident":
-        if item[0] == "int":
-            return "tipo_var"
+
+        aux = tabela_sintatica.check(item[0])
+        if aux:
+            return aux["cat"]
+
         return item[0] if item[2] == "reserv" else item[2]
 
     if item[1] == "simb":
@@ -50,56 +72,91 @@ def getItemKey(item):
         return item[1]
 
 
-def compare(head, token, item_pilha):
-
-    if head == token == "$":
-        return "fim"
-
-    if isTerminal(item_pilha):
-        if head == token:
-            return "token-valido"
-
-        if head == "$":
-            return "$"
-
-        return "erro"
-
-    valorTabela = tabela_m.get(head, token)
-
-    return "erro" if not valorTabela else "terminal"
-
-
-def tokenValido():
-    pilha_nt.pop()
-    listaDeTokens.pop(0)
-
-
 def sin():
+
     fim = False
+
     while not fim:
+
         head = getItemKey(pilha_nt.peek())
-        token = getItemKey(listaDeTokens[0])
-        print(head, token)
-        res_compare = compare(head, token, pilha_nt.peek())
-        print(res_compare)
-        if res_compare == "fim":
-            tokenValido()
+        token = getItemKey(listaDeTokens[p])
+
+        # print("tokens=> " + head + " " + token)
+
+        if head == token and token == "$":
             fim = True
 
-        elif res_compare == "token-valido":
-            tokenValido()
+        elif not isTerminal(pilha_nt.peek()):  # se o item da pilha é nao-terminal
 
-        elif res_compare == "terminal":
-            if tabela_m.get(head, token)[0] != "$":
+            aux = tabela_m.get(head, token)
+            if aux == False:
+                erro()
+
+            if aux[0] != "$":
                 pilha_nt.pop()
-            addTerminal(tabela_m.get(head, token))
 
-        elif res_compare == "$":
-            pilha_nt.pop()
-            pilha_nt.pop()
+            addTerminal(aux)
 
-        elif res_compare == "erro":
-            erro()
+            # or (head == "comando" and token == "to")
+            if head == "variaveis" or head == "lista_id":
+                pilha_declara.push("id_var")
+
+            elif head == "procedimento":
+                pilha_declara.push("id_proc")
+
+            elif head == "funcao":
+                pilha_declara.push("id_func")
+
+        else:
+
+            if head == "$":
+                pilha_nt.pop()
+                pilha_nt.pop()
+                # ("pilha=> " + pilha_nt.toString())
+
+            elif head == token or (token == "int" and (head == "tipo_var" or head == "tipo_func")):
+
+                if token == "id":
+                    aux = tabela_sintatica.check(listaDeTokens[p][0])
+                    if aux or pilha_declara.isEmpty():  # se está na tabela ou não esta sendo declarado
+                        erro()
+
+                    tabela_sintatica.addLexema(
+                        listaDeTokens[p], pilha_declara.pop(), p - 1)
+
+                elif token == "id_var" or token == "id_proc":
+                    aux = tabela_sintatica.check(listaDeTokens[p][0])
+                    if not aux:  # se nao está declarada
+                        erro()
+
+                # semantico
+
+                    # em caso de comandos de bloco
+                if token == 'if' or token == 'proc' or token == 'func' or token == "to" or token == "while":
+                    pilha_condicional.push({"token": token, "position": p})
+
+                elif not pilha_condicional.isEmpty() and (token == 'fi' or token == 'end'): # em caso de comandos de bloco
+                    aux = pilha_condicional.pop()
+                    if pilha_condicional.isEmpty():
+                        fila_analise_semantica.append(aux['position'])
+                    #
+
+                    # comandos sem bloco
+                elif pilha_condicional.isEmpty():
+                    if token == "op_atrib" or token == "do" or token == "read" or token == "write":
+                        fila_analise_semantica.append(p)
+                    #    
+                #
+
+                tokenValido()
+
+            else:
+                erro()
 
 
 sin()
+for i in fila_analise_semantica:
+    sem.check(i)
+print(tabela_sintatica.tabela)
+res = open("output_sintatico.json", "w")
+res.write(json.dumps(tabela_sintatica.tabela))
