@@ -28,8 +28,14 @@ def condicional(p):
         condition.append(listaDeTokens[p][0])
         p += 1
     conditionValue = calc(condition)
+    pilha_bloco = Stack()
     if conditionValue == "False":
-        while listaDeTokens[p][0] != 'else' and listaDeTokens[p][0] != 'fi':
+        while (listaDeTokens[p][0] != 'else' and listaDeTokens[p][0] != 'fi') or not pilha_bloco.isEmpty():
+            if listaDeTokens[p][0] == 'if' or listaDeTokens[p][0] == "to" or listaDeTokens[p][0] == "while":
+                pilha_bloco.push(listaDeTokens[p][0])
+            elif listaDeTokens[p][0] == 'end' or listaDeTokens[p][0] == "fi":
+                pilha_bloco.pop()
+
             p += 1
 
         if listaDeTokens[p][0] == 'fi':
@@ -98,6 +104,18 @@ def loop(p):
 
         endPosition = i
         i = p
+    
+    #caso o while inicie com condição falsa
+    if endPosition == None:
+        pilha_bloco = Stack()
+        while listaDeTokens[p][0] != 'end' or not pilha_bloco.isEmpty():
+            if listaDeTokens[p][0] == 'if' or listaDeTokens[p][0] == "to" or listaDeTokens[p][0] == "while":
+                pilha_bloco.push(listaDeTokens[p][0])
+            elif listaDeTokens[p][0] == 'end' or listaDeTokens[p][0] == "fi":
+                pilha_bloco.pop()
+
+            p += 1
+        endPosition = p
 
     return endPosition
 
@@ -209,7 +227,10 @@ def calc(exp):
             elif postFix[0] == '*':
                 output.push(str(v1 * v2))
             elif postFix[0] == '/':
-                if v2%v1 != 0:
+                if v1 == 0:
+                    print("erro! divisão por 0")
+                    exit()
+                if v2 % v1 != 0:
                     print('Erro! tipo não suportado')
                     exit()
                 output.push(str(int(v2 / v1)))
