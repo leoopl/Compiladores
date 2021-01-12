@@ -209,6 +209,9 @@ def calc(exp):
             elif postFix[0] == '*':
                 output.push(str(v1 * v2))
             elif postFix[0] == '/':
+                if v1 == 0:
+                  print("Erro! Divisão por Zero")
+                  exit()
                 if v2%v1 != 0:
                     print('Erro! tipo não suportado')
                     exit()
