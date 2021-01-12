@@ -44,20 +44,29 @@ def condicional(p):
     while listaDeTokens[p][0] != 'else' and listaDeTokens[p][0] != 'fi':
         p = check(p) + 1
 
-    while listaDeTokens[p][0] != 'fi':
-        p += 1
+    if listaDeTokens[p][0] != "fi":
+        pilha_bloco = Stack()
+        pilha_bloco.push("if")
+        while not pilha_bloco.isEmpty():
+            if listaDeTokens[p][0] == 'if' or listaDeTokens[p][0] == "to" or listaDeTokens[p][0] == "while":
+                pilha_bloco.push(listaDeTokens[p][0])
+            elif listaDeTokens[p][0] == 'end' or listaDeTokens[p][0] == "fi":
+                pilha_bloco.pop()
+
+            p += 1
+        p = p-1    
     return p
 
 
 def wrCont(p):
-    next = listaDeTokens[p] #listaDeTokens+1
+    next = listaDeTokens[p]  # listaDeTokens+1
     while (next[0] != ';'):
         if next[2] == 'id' or next[3] == 'id_var':
             if (tabela_sintatica.tabela[next[0]]['value']).isnumeric():
-              pass
+                pass
             else:
-              print("Error!!!")
-              exit()         
+                print("Error!!!")
+                exit()
         elif next[0] == ',':
             pass
         else:
@@ -104,8 +113,8 @@ def loop(p):
 
         endPosition = i
         i = p
-    
-    #caso o while inicie com condição falsa
+
+    # caso o while inicie com condição falsa
     if endPosition == None:
         pilha_bloco = Stack()
         while listaDeTokens[p][0] != 'end' or not pilha_bloco.isEmpty():
@@ -228,15 +237,9 @@ def calc(exp):
                 output.push(str(v1 * v2))
             elif postFix[0] == '/':
                 if v1 == 0:
-<<<<<<< HEAD
-                    print("erro! divisão por 0")
+                    print("Erro! Divisão por Zero")
                     exit()
                 if v2 % v1 != 0:
-=======
-                  print("Erro! Divisão por Zero")
-                  exit()
-                if v2%v1 != 0:
->>>>>>> 5d98d65fe50f45f0a6a062f71a38fb990e49bd07
                     print('Erro! tipo não suportado')
                     exit()
                 output.push(str(int(v2 / v1)))

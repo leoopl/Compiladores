@@ -1,20 +1,32 @@
-int x , y ;
+int x, y;
 
-func ler : int ;
-int z ;
+func ler: int;
+int z;
 begin
-read z , x ;
-end
-
-proc escreve ( w : int ) ;
-begin
-write w ;
+read z;
 end
 
 begin
-x := 0 ;
-y := 2 ;
-x := y / x ;
-do x := x + 1 ; until x > 10 ;
-write x ; 
+x:= 3;
+y:= 2;
+if x > y
+then 
+while y < x
+do y := y + 1;
+end;
+else
+while x < y
+do x := x + 1;
+end;
+if x > y
+then 
+while y < x
+do y := y + 1;
+end;
+else
+while x < y
+do x := x + 1;
+end;
+fi;
+fi;
 end
